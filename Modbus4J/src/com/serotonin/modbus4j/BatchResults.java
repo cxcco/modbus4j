@@ -23,35 +23,37 @@ package com.serotonin.modbus4j;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BatchResults<K> {
-    private final Map<K, Object> data = new HashMap<>();
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.annotation.JSONField;
 
-    public void addResult(K key, Object value) {
+public class BatchResults {
+    private final Map<String, Object> data = new HashMap<>();
+
+    public Map<String, Object> getData() {
+		return data;
+	}
+
+	public void addResult(String key, Object value) {
         data.put(key, value);
     }
 
-    public Object getValue(K key) {
+    public Object getValue(String key) {
         return data.get(key);
     }
 
-    public Integer getIntValue(K key) {
+    public Integer getIntValue(String key) {
         return (Integer) getValue(key);
     }
 
-    public Long getLongValue(K key) {
+    public Long getLongValue(String key) {
         return (Long) getValue(key);
     }
 
-    public Double getDoubleValue(K key) {
+    public Double getDoubleValue(String key) {
         return (Double) getValue(key);
     }
 
-    public Float getFloatValue(K key) {
+    public Float getFloatValue(String key) {
         return (Float) getValue(key);
-    }
-
-    @Override
-    public String toString() {
-        return data.toString();
     }
 }

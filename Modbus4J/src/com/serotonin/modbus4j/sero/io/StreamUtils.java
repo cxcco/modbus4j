@@ -229,7 +229,7 @@ public class StreamUtils {
     public static String dumpHex(byte[] b, int pos, int len) {
         StringBuilder sb = new StringBuilder();
         for (int i = pos; i < len; i++)
-            sb.append(StringUtils.leftPad(Integer.toHexString(b[i] & 0xff), 2, '0'));
+            sb.append(StringUtils.leftPad(Integer.toHexString(b[i] & 0xff).toUpperCase(), 2, '0')).append(" ");
         return sb.toString();
     }
 

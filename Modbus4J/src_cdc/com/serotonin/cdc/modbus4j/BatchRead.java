@@ -47,7 +47,7 @@ import com.serotonin.cdc.modbus4j.locator.BaseLocator;
  * which causes requests to be partitioned into only contiguous sets.
  * 
  * @author mlohbihler
- * @param <K>
+ * @param  <String>
  */
 public class BatchRead {
     private final List requestValues = new ArrayList();

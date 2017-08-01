@@ -24,16 +24,16 @@ import com.serotonin.modbus4j.ExceptionResult;
 import com.serotonin.modbus4j.code.ExceptionCode;
 import com.serotonin.modbus4j.locator.BaseLocator;
 
-public class KeyedModbusLocator<K> {
-    private final K key;
+public class KeyedModbusLocator {
+    private final String key;
     private final BaseLocator<?> locator;
 
-    public KeyedModbusLocator(K key, BaseLocator<?> locator) {
+    public KeyedModbusLocator(String key, BaseLocator<?> locator) {
         this.key = key;
         this.locator = locator;
     }
 
-    public K getKey() {
+    public String getKey() {
         return key;
     }
 
@@ -45,7 +45,14 @@ public class KeyedModbusLocator<K> {
     public String toString() {
         return "KeyedModbusLocator(key=" + key + ", locator=" + locator + ")";
     }
-
+ 
+    /**
+     * 返回slaveId.key组合的result-key
+     * @return
+     */
+    public String getSlaveIdAndKey(){
+    	return getSlaveAndRange().getSlaveId()+"."+key;
+    }
     //
     ///
     /// Delegation.

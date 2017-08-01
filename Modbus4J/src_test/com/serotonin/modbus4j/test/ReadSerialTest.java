@@ -6,6 +6,8 @@ package com.serotonin.modbus4j.test;
 
 import com.serotonin.modbus4j.ModbusFactory;
 import com.serotonin.modbus4j.ModbusMaster;
+import com.serotonin.modbus4j.serial.rxtxImpl.SerialParameters;
+import com.serotonin.modbus4j.serial.rxtxImpl.SerialPortWrapperRxtxImpl;
 
 /**
  * @author Matthew Lohbihler
@@ -13,15 +15,10 @@ import com.serotonin.modbus4j.ModbusMaster;
 public class ReadSerialTest {
     public static void main(String[] args) throws Exception {
 
-    	String commPortId = "COM1";
-    	int baudRate = 9600;
-    	int flowControlIn = 0;
-		int flowControlOut = 0; 
-		int dataBits = 8;
-		int stopBits = 2;
-		int parity = 0;
+    	String commPortId = "COM2";
     	
-    	TestSerialPortWrapper wrapper = new TestSerialPortWrapper(commPortId, baudRate, flowControlIn, flowControlOut, dataBits, stopBits, parity);
+		SerialParameters serialParameters = new SerialParameters(commPortId);
+		SerialPortWrapperRxtxImpl wrapper = new SerialPortWrapperRxtxImpl(serialParameters);
         ModbusMaster master = new ModbusFactory().createRtuMaster(wrapper);
         master.setTimeout(200);
         master.setRetries(1);

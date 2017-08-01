@@ -8,6 +8,7 @@ import com.serotonin.modbus4j.BatchRead;
 import com.serotonin.modbus4j.BatchResults;
 import com.serotonin.modbus4j.ModbusFactory;
 import com.serotonin.modbus4j.ModbusMaster;
+import com.serotonin.modbus4j.MultiSlaveBatchResults;
 import com.serotonin.modbus4j.code.DataType;
 import com.serotonin.modbus4j.exception.ErrorResponseException;
 import com.serotonin.modbus4j.ip.IpParameters;
@@ -31,7 +32,7 @@ public class MasterTest2 {
         master.setTimeout(4000);
         master.setRetries(1);
 
-        BatchRead<Integer> batch = new BatchRead<Integer>();
+        BatchRead batch = new BatchRead();
         //        batch.addLocator(0, new ModbusLocator(1, RegisterRange.COIL_STATUS, 2048, DataType.BINARY));
         //        batch.addLocator(1, new ModbusLocator(1, RegisterRange.COIL_STATUS, 2049, DataType.BINARY));
         //        batch.addLocator(2, new ModbusLocator(1, RegisterRange.COIL_STATUS, 2050, DataType.BINARY));
@@ -50,23 +51,20 @@ public class MasterTest2 {
         //        batch.addLocator(16, new ModbusLocator(1, RegisterRange.COIL_STATUS, 3668, DataType.BINARY));
         //        batch.addLocator(18, new ModbusLocator(1, RegisterRange.COIL_STATUS, 3969, DataType.BINARY));
 
-        batch.addLocator(0, BaseLocator.holdingRegister(5, 80, DataType.TWO_BYTE_INT_SIGNED));
-        batch.addLocator(1, BaseLocator.holdingRegister(5, 202, DataType.EIGHT_BYTE_INT_SIGNED));
+        batch.addLocator("0", BaseLocator.holdingRegister(5, 80, DataType.TWO_BYTE_INT_SIGNED));
+        batch.addLocator("1", BaseLocator.holdingRegister(5, 202, DataType.EIGHT_BYTE_INT_SIGNED));
 
         try {
             master.init();
 
             while (true) {
                 batch.setContiguousRequests(false);
-                BatchResults<Integer> results = master.send(batch);
-                System.out.println(results.getValue(0));
-                System.out.println(results.getValue(1));
+                MultiSlaveBatchResults results = master.send(batch);
+                System.out.println(results.getBatchResults("5.0").getValue("0"));
+                System.out.println(results.getBatchResults("5.0").getValue("1"));
 
                 Thread.sleep(2000);
             }
-        }
-        catch (ErrorResponseException e) {
-            System.out.println(e.getErrorResponse().getExceptionMessage());
         }
         finally {
             master.destroy();

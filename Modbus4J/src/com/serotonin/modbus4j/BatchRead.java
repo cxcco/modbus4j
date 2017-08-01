@@ -47,10 +47,10 @@ import com.serotonin.modbus4j.locator.BaseLocator;
  * which causes requests to be partitioned into only contiguous sets.
  * 
  * @author mlohbihler
- * @param <K>
+ * @param  <String>
  */
-public class BatchRead<K> {
-    private final List<KeyedModbusLocator<K>> requestValues = new ArrayList<>();
+public class BatchRead {
+    private final List<KeyedModbusLocator> requestValues = new ArrayList<>();
 
     /**
      * See documentation above.
@@ -80,7 +80,7 @@ public class BatchRead<K> {
     /**
      * This is what the data looks like after partitioning.
      */
-    private List<ReadFunctionGroup<K>> functionGroups;
+    private List<ReadFunctionGroup> functionGroups;
 
     public boolean isContiguousRequests() {
         return contiguousRequests;
@@ -107,17 +107,17 @@ public class BatchRead<K> {
         this.exceptionsInResults = exceptionsInResults;
     }
 
-    public List<ReadFunctionGroup<K>> getReadFunctionGroups(ModbusMaster master) {
+    public List<ReadFunctionGroup> getReadFunctionGroups(ModbusMaster master) {
         if (functionGroups == null)
             doPartition(master);
         return functionGroups;
     }
 
-    public void addLocator(K id, BaseLocator<?> locator) {
-        addLocator(new KeyedModbusLocator<>(id, locator));
+    public void addLocator(String id, BaseLocator<?> locator) {
+        addLocator(new KeyedModbusLocator(id, locator));
     }
 
-    private void addLocator(KeyedModbusLocator<K> locator) {
+    private void addLocator(KeyedModbusLocator locator) {
         requestValues.add(locator);
         functionGroups = null;
     }
@@ -135,11 +135,11 @@ public class BatchRead<K> {
     // Private stuff
     //
     private void doPartition(ModbusMaster master) {
-        Map<SlaveAndRange, List<KeyedModbusLocator<K>>> slaveRangeBatch = new HashMap<>();
+        Map<SlaveAndRange, List<KeyedModbusLocator>> slaveRangeBatch = new HashMap<>();
 
         // Separate the batch into slave ids and read functions.
-        List<KeyedModbusLocator<K>> functionList;
-        for (KeyedModbusLocator<K> locator : requestValues) {
+        List<KeyedModbusLocator> functionList;
+        for (KeyedModbusLocator locator : requestValues) {
             // Find the function list for this slave and range. Create it if necessary.
             functionList = slaveRangeBatch.get(locator.getSlaveAndRange());
             if (functionList == null) {
@@ -153,10 +153,10 @@ public class BatchRead<K> {
 
         // Now that we have locators grouped into slave and function, check each read function group and break into
         // parts as necessary.
-        Collection<List<KeyedModbusLocator<K>>> functionLocatorLists = slaveRangeBatch.values();
+        Collection<List<KeyedModbusLocator>> functionLocatorLists = slaveRangeBatch.values();
         FunctionLocatorComparator comparator = new FunctionLocatorComparator();
         functionGroups = new ArrayList<>();
-        for (List<KeyedModbusLocator<K>> functionLocatorList : functionLocatorLists) {
+        for (List<KeyedModbusLocator> functionLocatorList : functionLocatorLists) {
             // Sort the list by offset.
             Collections.sort(functionLocatorList, comparator);
 
@@ -177,15 +177,15 @@ public class BatchRead<K> {
      * 
      * This method assumes the locators have already been sorted by start offset.
      */
-    private void createRequestGroups(List<ReadFunctionGroup<K>> functionGroups, List<KeyedModbusLocator<K>> locators,
+    private void createRequestGroups(List<ReadFunctionGroup> functionGroups, List<KeyedModbusLocator> locators,
             int maxCount) {
-        ReadFunctionGroup<K> functionGroup;
-        KeyedModbusLocator<K> locator;
+        ReadFunctionGroup functionGroup;
+        KeyedModbusLocator locator;
         int index;
         int endOffset;
         // Loop for creation of groups.
         while (locators.size() > 0) {
-            functionGroup = new ReadFunctionGroup<>(locators.remove(0));
+            functionGroup = new ReadFunctionGroup(locators.remove(0));
             functionGroups.add(functionGroup);
             endOffset = functionGroup.getStartOffset() + maxCount - 1;
 
@@ -222,9 +222,9 @@ public class BatchRead<K> {
         }
     }
 
-    class FunctionLocatorComparator implements Comparator<KeyedModbusLocator<K>> {
+    class FunctionLocatorComparator implements Comparator<KeyedModbusLocator> {
         @Override
-        public int compare(KeyedModbusLocator<K> ml1, KeyedModbusLocator<K> ml2) {
+        public int compare(KeyedModbusLocator ml1, KeyedModbusLocator ml2) {
             return ml1.getOffset() - ml2.getOffset();
         }
     }

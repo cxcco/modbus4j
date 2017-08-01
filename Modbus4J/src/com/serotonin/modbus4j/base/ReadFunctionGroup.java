@@ -25,20 +25,20 @@ import java.util.List;
 
 import com.serotonin.modbus4j.code.RegisterRange;
 
-public class ReadFunctionGroup<K> {
+public class ReadFunctionGroup {
     private final SlaveAndRange slaveAndRange;
     private final int functionCode;
-    private final List<KeyedModbusLocator<K>> locators = new ArrayList<>();
+    private final List<KeyedModbusLocator> locators = new ArrayList<>();
     private int startOffset = 65536;
     private int length = 0;
 
-    public ReadFunctionGroup(KeyedModbusLocator<K> locator) {
+    public ReadFunctionGroup(KeyedModbusLocator locator) {
         slaveAndRange = locator.getSlaveAndRange();
         functionCode = RegisterRange.getReadFunctionCode(slaveAndRange.getRange());
         add(locator);
     }
 
-    public void add(KeyedModbusLocator<K> locator) {
+    public void add(KeyedModbusLocator locator) {
         if (startOffset > locator.getOffset())
             startOffset = locator.getOffset();
         if (length < locator.getEndOffset() - startOffset + 1)
@@ -66,7 +66,7 @@ public class ReadFunctionGroup<K> {
         return functionCode;
     }
 
-    public List<KeyedModbusLocator<K>> getLocators() {
+    public List<KeyedModbusLocator> getLocators() {
         return locators;
     }
 }
